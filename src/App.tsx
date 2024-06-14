@@ -7,23 +7,12 @@ import "@refinedev/antd/dist/reset.css";
 
 import { dataProvider, liveProvider } from "./providers";
 
-// import dataProvider, {
-//   GraphQLClient,
-//   liveProvider,
-// } from "@refinedev/nestjs-query";
-
 import routerBindings, {
   DocumentTitleHandler,
   UnsavedChangesNotifier,
 } from "@refinedev/react-router-v6";
 import { App as AntdApp } from "antd";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-
-// const API_URL = "https://api.nestjs-query.refine.dev/graphql";
-// const WS_URL = "wss://api.nestjs-query.refine.dev/graphql";
-
-// const gqlClient = new GraphQLClient(API_URL);
-// const wsClient = createClient({ url: WS_URL });
 
 function App() {
   return (

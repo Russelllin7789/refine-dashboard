@@ -4,6 +4,16 @@ import { useGetIdentity } from "@refinedev/core";
 import type { User } from "@/graphql/schema.types";
 const CurrentUser = () => {
   const { data: user } = useGetIdentity<User>();
+
+  const content = (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+      }}
+    ></div>
+  );
+
   return (
     <>
       <Popover

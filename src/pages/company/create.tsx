@@ -1,9 +1,13 @@
 import { Form, Input, Modal, Select } from "antd";
-import { CompanyList } from "./list";
 import { useModalForm, useSelect } from "@refinedev/antd";
+import { GetFieldsFromList } from "@refinedev/nestjs-query";
 import { useGo } from "@refinedev/core";
+
+import SelectOptionWithAvatar from "@/components/select-option-with-avatar";
+import { CompanyList } from "./list";
 import { CREATE_COMPANY_MUTATION } from "@/graphql/mutations";
 import { USERS_SELECT_QUERY } from "@/graphql/queries";
+import { UsersSelectQuery } from "@/graphql/types";
 
 export const Create = () => {
   const go = useGo();
@@ -30,7 +34,9 @@ export const Create = () => {
   });
 
   // use refine UseSelect hook to get sales owners
-  const { selectProps, queryResults } = useSelect({
+  const { selectProps, queryResult } = useSelect<
+    GetFieldsFromList<UsersSelectQuery>
+  >({
     resource: "users",
     optionLabel: "name",
     meta: {
@@ -63,15 +69,17 @@ export const Create = () => {
             <Select
               placeholder="Please select a sales owner"
               {...selectProps}
-              options={queryResults.data?.data.map((user) => ({
-                values: user.id,
-                label: (
-                  <SelectOptionWithAvatar
-                    name={user.name}
-                    avatarUrl={user.avatarUrl ?? undefined}
-                  />
-                ),
-              }))}
+              options={
+                queryResult.data?.data.map((user) => ({
+                  value: user.id,
+                  label: (
+                    <SelectOptionWithAvatar
+                      name={user.name}
+                      avatarUrl={user.avatarUrl ?? undefined}
+                    />
+                  ),
+                })) ?? []
+              }
             />
           </Form.Item>
         </Form>

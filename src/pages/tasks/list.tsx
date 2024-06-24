@@ -10,6 +10,7 @@ const List = () => {
       <KanbanBoardContainer>
         <KanbanBoard>
           <KanbanColumn></KanbanColumn>
+          <KanbanColumn></KanbanColumn>
         </KanbanBoard>
       </KanbanBoardContainer>
     </>

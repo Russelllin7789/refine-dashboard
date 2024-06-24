@@ -1,5 +1,5 @@
-import { DndContext } from "@dnd-kit/core";
 import React from "react";
+import { DndContext } from "@dnd-kit/core";
 
 export const KanbanBoardContainer = ({ children }: React.PropsWithChildren) => {
   return (

@@ -1,4 +1,7 @@
 import React from "react";
+import { GetFieldsFromList } from "@refinedev/nestjs-query";
+import { useList } from "@refinedev/core";
+
 import {
   KanbanBoardContainer,
   KanbanBoard,
@@ -6,11 +9,10 @@ import {
 import KanbanColumn from "@/components/tasks/kanban/column";
 import KanbanItem from "@/components/tasks/kanban/item";
 import { TASKS_QUERY, TASK_STAGES_QUERY } from "@/graphql/queries";
-import { useList } from "@refinedev/core";
 import { TaskStage } from "@/graphql/schema.types";
-import { GetFieldsFromList } from "@refinedev/nestjs-query";
 import { TasksQuery } from "@/graphql/types";
 import ProjectCardMemo from "@/components/tasks/kanban/card";
+import { KanbanAddCardButton } from "@/components/tasks/kanban/add-card-button";
 
 const List = () => {
   const { data: stages, isLoading: isLoadingStages } = useList<TaskStage>({
@@ -100,6 +102,12 @@ const List = () => {
                 />
               </KanbanItem>
             ))}
+
+            {!taskStages.unassignedStage.length && (
+              <KanbanAddCardButton
+                onClick={() => handleAddCard({ stageId: "unassigned" })}
+              />
+            )}
           </KanbanColumn>
         </KanbanBoard>
       </KanbanBoardContainer>

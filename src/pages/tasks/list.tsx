@@ -13,6 +13,7 @@ import { TaskStage } from "@/graphql/schema.types";
 import { TasksQuery } from "@/graphql/types";
 import ProjectCardMemo from "@/components/tasks/kanban/card";
 import { KanbanAddCardButton } from "@/components/tasks/kanban/add-card-button";
+import { KanbanColumnSkeleton, ProjectCardSkeleton } from "@/components";
 
 const List = () => {
   const { data: stages, isLoading: isLoadingStages } = useList<TaskStage>({
@@ -80,6 +81,10 @@ const List = () => {
 
   const handleAddCard = (args: { stageId: string }) => {};
 
+  const isLoading = isLoadingStages || isLoadingTasks;
+
+  if (isLoading) return <PageSkeleton />;
+
   return (
     <>
       <KanbanBoardContainer>
@@ -109,6 +114,16 @@ const List = () => {
               />
             )}
           </KanbanColumn>
+
+          {taskStages.columns?.map((column) => (
+            <KanbanColumn
+              key={column.id}
+              id={column.id}
+              title={column.title}
+              count={column.tasks.length}
+              onAddClick={() => handleAddCard({ stageId: column.id })}
+            ></KanbanColumn>
+          ))}
         </KanbanBoard>
       </KanbanBoardContainer>
     </>
@@ -116,3 +131,20 @@ const List = () => {
 };
 
 export default List;
+
+const PageSkeleton = () => {
+  const columnCount = 6;
+  const itemCount = 4;
+
+  return (
+    <KanbanBoardContainer>
+      {Array.from({ length: columnCount }).map((_, index) => (
+        <KanbanColumnSkeleton key={index}>
+          {Array.from({ length: itemCount }).map((_, index) => (
+            <ProjectCardSkeleton key={index} />
+          ))}
+        </KanbanColumnSkeleton>
+      ))}
+    </KanbanBoardContainer>
+  );
+};

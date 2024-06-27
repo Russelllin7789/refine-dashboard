@@ -23,6 +23,7 @@ import { TextIcon } from "@/components/text-icon";
 import { User } from "@/graphql/schema.types";
 import { getDateColor } from "@/utilities";
 import CustomAvatar from "@/components/custom-avatar";
+import { useDelete, useNavigation } from "@refinedev/core";
 
 type ProjectCardProps = {
   id: string;
@@ -34,7 +35,8 @@ type ProjectCardProps = {
 
 const ProjectCard = ({ id, title, dueDate, users }: ProjectCardProps) => {
   const { token } = theme.useToken();
-  const edit = () => {};
+  const { edit } = useNavigation();
+  const { mutate } = useDelete();
   const dropdownItems = useMemo(() => {
     const dropdownItems: MenuProps["items"] = [
       {
@@ -42,7 +44,7 @@ const ProjectCard = ({ id, title, dueDate, users }: ProjectCardProps) => {
         key: "1",
         icon: <EyeOutlined />,
         onClick: () => {
-          edit();
+          edit("tasks", id, "replace");
         },
       },
       {
@@ -50,7 +52,15 @@ const ProjectCard = ({ id, title, dueDate, users }: ProjectCardProps) => {
         label: "Delete card",
         key: "2",
         icon: <DeleteOutlined />,
-        onClick: () => {},
+        onClick: () => {
+          mutate({
+            resource: "tasks",
+            id,
+            meta: {
+              operation: "task",
+            },
+          });
+        },
       },
     ];
 

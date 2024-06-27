@@ -117,7 +117,7 @@ const List = ({ children }: React.PropsWithChildren) => {
   return (
     <>
       <KanbanBoardContainer>
-        <KanbanBoard>
+        <KanbanBoard onDragEnd={handleOnDragEnd}>
           <KanbanColumn
             id="unassigned"
             title="unassigned"

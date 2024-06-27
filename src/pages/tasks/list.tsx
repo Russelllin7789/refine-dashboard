@@ -1,6 +1,6 @@
 import React from "react";
 import { GetFieldsFromList } from "@refinedev/nestjs-query";
-import { useList } from "@refinedev/core";
+import { useList, useUpdate } from "@refinedev/core";
 
 import {
   KanbanBoardContainer,
@@ -14,8 +14,10 @@ import { TasksQuery } from "@/graphql/types";
 import ProjectCardMemo from "@/components/tasks/kanban/card";
 import { KanbanAddCardButton } from "@/components/tasks/kanban/add-card-button";
 import { KanbanColumnSkeleton, ProjectCardSkeleton } from "@/components";
+import { DragEndEvent } from "@dnd-kit/core";
+import { UPDATE_TASK_STAGE_MUTATION } from "@/graphql/mutations";
 
-const List = () => {
+const List = ({ children }: React.PropsWithChildren) => {
   const { data: stages, isLoading: isLoadingStages } = useList<TaskStage>({
     resource: "taskStages",
     filters: [
@@ -58,6 +60,8 @@ const List = () => {
     },
   });
 
+  const { mutate: updateTask } = useUpdate();
+
   // only refetch the taskStages when the tasks or stages changed
   const taskStages = React.useMemo(() => {
     if (!tasks?.data || !stages?.data) {
@@ -80,6 +84,31 @@ const List = () => {
   }, [stages, tasks]);
 
   const handleAddCard = (args: { stageId: string }) => {};
+  // update stage when task is dragged
+  const handleOnDragEnd = (event: DragEndEvent) => {
+    let stageId = event.over?.id as undefined | string | null;
+    const taskId = event.active.id as string;
+    const taskStageId = event.active.data.current?.stageId;
+
+    if (taskStageId === stageId) return;
+
+    if (stageId === "unassigned") {
+      stageId = null;
+    }
+
+    updateTask({
+      resource: "tasks",
+      id: taskId,
+      values: {
+        stageId: stageId,
+      },
+      successNotification: false,
+      mutationMode: "optimistic",
+      meta: {
+        gqlMutation: UPDATE_TASK_STAGE_MUTATION,
+      },
+    });
+  };
 
   const isLoading = isLoadingStages || isLoadingTasks;
 
@@ -142,6 +171,7 @@ const List = () => {
           ))}
         </KanbanBoard>
       </KanbanBoardContainer>
+      {children}
     </>
   );
 };

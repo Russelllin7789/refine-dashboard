@@ -1,6 +1,7 @@
 import CustomAvatar from "@/components/custom-avatar";
 import { Text } from "@/components/text";
 import { COMPANIES_LIST_QUERY } from "@/graphql/queries";
+import { CompaniesListQuery } from "@/graphql/types";
 // import { Company } from "@/graphql/schema.types";
 import { currencyNumber } from "@/utilities";
 import { SearchOutlined } from "@ant-design/icons";
@@ -12,14 +13,19 @@ import {
   List,
   useTable,
 } from "@refinedev/antd";
-import { getDefaultFilter, useGo } from "@refinedev/core";
+import { HttpError, getDefaultFilter, useGo } from "@refinedev/core";
+import { GetFieldsFromList } from "@refinedev/nestjs-query";
 import { Input, Space, Table } from "antd";
 
 export const CompanyList = ({ children }: React.PropsWithChildren) => {
   // this hook allow us to navigate to different path
   const go = useGo();
 
-  const { tableProps, filters } = useTable({
+  const { tableProps, filters } = useTable<
+    GetFieldsFromList<CompaniesListQuery>,
+    HttpError,
+    GetFieldsFromList<CompaniesListQuery>
+  >({
     resource: "companies",
     onSearch: (values) => {
       return [
@@ -93,23 +99,37 @@ export const CompanyList = ({ children }: React.PropsWithChildren) => {
                 <Input placeholder="Search Company" />
               </FilterDropdown>
             )}
-            render={(value, record) => (
+            render={(_value, record) => (
               <Space>
                 <CustomAvatar
                   shape="square"
-                  name={record.name}
-                  src={record.avatarUrl}
+                  name={
+                    (record as unknown as GetFieldsFromList<CompaniesListQuery>)
+                      .name
+                  }
+                  src={
+                    (record as unknown as GetFieldsFromList<CompaniesListQuery>)
+                      .avatarUrl
+                  }
                 />
-                <Text style={{ whiteSpace: "nowrap" }}>{record.name}</Text>
+                <Text style={{ whiteSpace: "nowrap" }}>
+                  {
+                    (record as unknown as GetFieldsFromList<CompaniesListQuery>)
+                      .name
+                  }
+                </Text>
               </Space>
             )}
           />
           <Table.Column
             dataIndex="totalRevenue"
             title="Open deals amount"
-            render={(value, company) => (
+            render={(_value, company) => (
               <Text style={{ whiteSpace: "nowrap" }}>
-                {currencyNumber(company?.dealsAggregate?.[0].sum?.value || 0)}
+                {currencyNumber(
+                  (company as unknown as GetFieldsFromList<CompaniesListQuery>)
+                    ?.dealsAggregate?.[0].sum?.value || 0
+                )}
               </Text>
             )}
           />
